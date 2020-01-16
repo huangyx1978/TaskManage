@@ -1,0 +1,75 @@
+UQ jksoft/TaskManage version='0.01' author='hyx';--定义uq的名字
+
+SHEET Task ver 0.1(
+    compnay ID Company,--公司机构
+    department ID Department,--部门
+    ARR taskdetail(
+        fdate datetime,--完成时间
+        staffmember ID StaffMember,--任务人
+        title varchar(200),--标题
+        taskdesc varchar(2000), ---任务内容
+        integral int --积分
+    )
+)
+ Verify
+ RETURNS a1(k1 int,k2 varchar(200))
+ {
+
+ }
+ ACTION{--不带名字的ACTION是在单据保存的时候自动调用的记账操作
+
+ }
+ ACTION save{--带名字的ACTION需要在前台显示调用
+     STATE to saved;--将单据状态置位 saved状态
+ }
+ STATE saved{--状态定义
+     ACTION submit{--当前状态下可执行的ACTION
+        var recid id;
+
+        foreach taskdetail
+        {
+            PENDING Taskpendding +(compnay:compnay, department:department, staffmember:staffmember, fdate:fdate, title:title, taskdesc:taskdesc, integral:integral) to recId;
+        };
+
+        STATE to END;
+     };
+ };
+
+
+
+PENDING Taskpendding (
+    id,
+    date,
+    compnay ID Company,
+    department ID Department,
+    staffmember ID StaffMember,
+    fdate datetime,
+    title varchar(200),
+    taskdesc varchar(2000),
+    integral int
+);
+
+QUERY QueryTask (
+    key varchar(100)--参数
+)
+PAGE (
+    id bigint start 0 asc,//分页查询必需指定一个id字段作为分页依据
+    date datetime,
+    compnay ID Company,
+    department ID Department,
+    staffmember ID StaffMember,
+    fdate datetime,
+    title varchar(200),
+    taskdesc varchar(2000),
+    integral int
+) {
+    var _key varchar(100);
+    set _key = concat('%', key, '%');
+    page select a.id,a.date,a.compnay,a.department,a.staffmember,a.fdate,a.title,a.taskdesc,a.integral
+        from Taskpendding as a
+        where a.id>$pageStart and (
+            a.title like _key or a.taskdesc like _key
+        )
+        order by a.id asc
+        limit $pageSize;
+};

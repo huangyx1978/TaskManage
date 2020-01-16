@@ -1,0 +1,18 @@
+import TaskInfo = jksoft/Task;--引用开发号为jksoft的下面的名为Task的uq
+
+--如果账里面只是需要定义字段类型为Company,但不需要用Company的信息做检索,则直接这么引用
+--TUID Company ver 1.0 from TaskInfo;
+
+--如果账里面需要定义字段类型为Company,且需要用Company的信息做检索,则只需要将用于检索的字段同步过来就可以
+TUID Company ver 1.0 from TaskInfo(
+    id,
+    main no varchar(50),--编号
+    main name varchar(200)--名称
+);
+
+TUID Department ver 1.0 from TaskInfo;
+TUID StaffMember ver 1.0 from TaskInfo(
+    id,
+    main no varchar(50),--编号
+    main name varchar(200)--名称
+);
