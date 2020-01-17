@@ -1,7 +1,7 @@
 UQ jksoft/TaskManage version='0.01' author='hyx';--定义uq的名字
 
 SHEET Task ver 0.1(
-    compnay ID Company,--公司机构
+    company ID Company,--公司机构
     department ID Department,--部门
     ARR taskdetail(
         fdate datetime,--完成时间
@@ -28,7 +28,7 @@ SHEET Task ver 0.1(
 
         foreach taskdetail
         {
-            PENDING Taskpendding +(compnay:compnay, department:department, staffmember:staffmember, fdate:fdate, title:title, taskdesc:taskdesc, integral:integral) to recId;
+            PENDING Taskpendding +(company:company, department:department, staffmember:staffmember, fdate:fdate, title:title, taskdesc:taskdesc, integral:integral) to recId;
         };
 
         STATE to END;
@@ -40,7 +40,7 @@ SHEET Task ver 0.1(
 PENDING Taskpendding (
     id,
     date,
-    compnay ID Company,
+    company ID Company,
     department ID Department,
     staffmember ID StaffMember,
     fdate datetime,
@@ -55,7 +55,7 @@ QUERY QueryTask (
 PAGE (
     id bigint start 0 asc,//分页查询必需指定一个id字段作为分页依据
     date datetime,
-    compnay ID Company,
+    company ID Company,
     department ID Department,
     staffmember ID StaffMember,
     fdate datetime,
@@ -65,7 +65,7 @@ PAGE (
 ) {
     var _key varchar(100);
     set _key = concat('%', key, '%');
-    page select a.id,a.date,a.compnay,a.department,a.staffmember,a.fdate,a.title,a.taskdesc,a.integral
+    page select a.id,a.date,a.company,a.department,a.staffmember,a.fdate,a.title,a.taskdesc,a.integral
         from Taskpendding as a
         where a.id>$pageStart and (
             a.title like _key or a.taskdesc like _key

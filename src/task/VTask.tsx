@@ -21,8 +21,9 @@ export class VTask extends VPage<CTask>{
         this.controller.pager.more();//执行下一页的查询
     }
 
+    //在此展示任务详情
     private onItemClick = (item:any) => {
-        alert("点击了itme");
+        this.controller.showtaskdetail(item);
     }
 
     private onseach= async (seachkey:string)=>{
@@ -30,7 +31,7 @@ export class VTask extends VPage<CTask>{
      }
 
      private onAddClick=() =>{
-        alert("点击了增加");
+        this.controller.showaddtask();
     }
 
     render(){

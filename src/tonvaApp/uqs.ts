@@ -9,7 +9,20 @@ export interface TaskManage {
     QueryTask:Query;
 }
 
+export interface Task {
+    Company: Tuid;
+    QueryCompany: Query;
+    Department: Tuid;
+    QueryDepartment: Query;
+    QueryAllDepartment: Query;
+    QueryDepartments: Query;
+    StaffMember: Tuid;
+    QueryStaffMember:Query;
+    SaveStaffDepartment:Action;
+}
+
 export interface UQs {
     taskmanage: TaskManage;
+    task: Task;
 }
 
