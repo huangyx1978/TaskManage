@@ -5,7 +5,6 @@ import { UQs } from "./tonvaApp/uqs";
 import { VMain } from './tonvaApp/main';
 import { CMe } from "me/CMe";
 import { CHome } from "home/CHome";
-import {CHyx} from "info/CHyx";
 import {CTask} from "task/CTask";
 
 export class CApp extends CAppBase {

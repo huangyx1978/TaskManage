@@ -5,83 +5,75 @@ import {CTask} from './CTask';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 
-export class VAddTask extends VPage<CTask>{
+export class VAddTask extends VPage<CTask> {
+    private form: Form;
+
     async open(){
         this.openPage(this.page);
     }
 
+    /*弹出选公司机构页面,并将选中的记录返回*/
     private companypickid = async (context: Context, name: string, value: number)=>{
         let ret = await this.controller.callcompany();
         return ret;
     }
-
+    
     private renderCompany = (item: any) => {
-        let boxId = this.controller.boxCompany(item);//根据基础信息id获取基础信息
-        return tv(boxId,(values) => <span>{values.name}</span>);//将基础信息的内容进行组织并输出
-        //return tv(boxId);//不带第二个参数的时候内容输出格式在 tvs.tsx中定义
+        return tv(item,(values) => <span>{values.name}</span>);//将基础信息的内容进行组织并输出
     }
     
+    /*弹出选部门页面,并将选中的记录返回*/
     private departmentpickid = async (context: Context, name: string, value: number)=> {
         let ret = await this.controller.calldepartmen();
         return ret;
     }
 
     private renderDepartment = (item: any) => {
-        let boxId = this.controller.boxDepartment(item);//根据基础信息id获取基础信息
-        return tv(boxId,(values) => <span>{values.name}</span>);//将基础信息的内容进行组织并输出
+        return tv(item,(values) => <span>{values.name}</span>);//将基础信息的内容进行组织并输出
     }
 
     private renderStaffMember = (item: any) => {
-        let boxId = this.controller.boxStaffmember(item);//根据基础信息id获取基础信息
-        return tv(boxId,(values) => <span>{values.name}</span>);//将基础信息的内容进行组织并输出
+        return tv(item,(values) => <span>{values.name}</span>);//将基础信息的内容进行组织并输出
     }
   
     private addtaskdetail =() =>{
         this.controller.showaddtaskdetail();
     }
 
-    /*
-    private arrrender=(label: any, content: JSX.Element)=>{
-        return <div>
-            <div>{label}</div>
-            <div>{content}</div>
-        </div>;
+    private showdrafts =() =>{
+        alert('点击了草稿箱');
     }
 
-    private rowrender=(content: JSX.Element)=>{
-        return <div>{content}</div>
-    }
-    */
-
-    private renderDetailRow = (item:any, index:number) => {
-        return <div className="card">
-                    <div><button onClick={()=> this.Deletedetail(item,index)}>删除</button></div>{/*onClick 赋值匿名函数就可以把对应item获取过来做参数*/}
-                    <div className="card-body">
-                    <h5 className="card-title"><b>{item.title}</b></h5>
-                    <p className="card-text">{item.taskdesc}</p>
-                    <span>完成日期:{item.fdate}</span>
-                    <span>积分:{item.integral}</span>
-                    <span>任务人:{this.renderStaffMember(item.staffmember)}</span>
-                    </div>
-                </div>
-    }
-    
-
+    /*删除任务项*/
     private Deletedetail =(item:any,index:number)=>{
-        this.controller.task.taskdetail.splice(index,1);//从数组中删除项
+        this.controller.deletetaskdetail(item,index);
     }
 
     //提交单据
     private onSubmit = async () => {
-       let ret= await this.controller.savetask();
-       if(ret.id>0)
-       {
-            let ret = await this.controller.confirm({caption:'提示', message: '提交成功', ok:'确定'});
-            if (ret === 'ok')
+        let data = this.form.data;//获取Form的数据
+        if(this.controller.taskDetail.length===0)
+        {
+            await this.controller.confirm({caption:'提示', message: '还没有录入任何任务!', ok:'确定'});
+            return;
+        }
+        let ret= await this.controller.savetask(data);
+        if(ret.id>0)
+        {
+            let ret1 = await this.controller.confirm({caption:'提示', message: '提交成功', ok:'确定'});
+            if (ret1 === 'ok')
             {
                 this.closePage();
             }
-       }
+        }
+        else
+        {
+            let ret1 = await this.controller.confirm({caption:'提示', message: '提交失败', ok:'确定'});
+        }
+    }
+
+    private onSaveclick = async () =>{
+        alert("点击了保存为草稿");
     }
 
     private page = observer(() =>{
@@ -121,22 +113,60 @@ export class VAddTask extends VPage<CTask>{
             }
         };
 
-        let right=<button className="btn btn-success rounded align-self-center mr-2" onClick={this.addtaskdetail}>添加任务</button>
-
+        let right=<button className="btn btn-success rounded align-self-center mr-2" onClick={this.showdrafts}>草稿箱</button>
+        //formData={this.controller.task} 
         return <Page header='新建任务' right={right} headerClassName="bg-primary" back="close">
             {/*主表*/}
-            <Form schema={schema} uiSchema={uis} formData={this.controller.task} fieldLabelSize={2} className="m-3"/>
+            <Form ref={f => this.form = f}//这种固定写法可将Form赋给变量form,通过form可获取页面输入的数据
+                schema={schema} uiSchema={uis} 
+                fieldLabelSize={2} className="m-3"/>
             {/*明细*/}
             <div className="card">
-                <div className="card-header">任务明细</div>
+                <div className="card-header">
+                    <ul className="nav nav-pills card-header-pills">
+                        <li className="nav-item">
+                            <span className="nav-link">任务明细</span>
+                        </li>
+                        <li className="nav-item">
+                            <button className="nav-link btn btn-primary btn-sm" onClick={this.addtaskdetail}><b>+</b></button>
+                        </li>
+                    </ul>
+                </div>
                 <div className="card-body">   
-                    <List items={this.controller.task.taskdetail} item={{render: this.renderDetailRow}} />
+                    <List items={this.controller.taskDetail} item={{render: this.renderDetailRow}} />
                 </div>
             </div>
-            <button className='btn btn-primary w-100' onClick={this.onSubmit}>提 交</button>
+            <button className='btn btn-primary w-50 py-2' onClick={this.onSubmit}>提 交</button>
+            <button className='btn btn-primary w-50 py-2' onClick={this.onSaveclick}>保存为草稿</button>
         </Page>
-
     });
+
+
+        /*
+    private arrrender=(label: any, content: JSX.Element)=>{
+        return <div>
+            <div>{label}</div>
+            <div>{content}</div>
+        </div>;
+    }
+
+    private rowrender=(content: JSX.Element)=>{
+        return <div>{content}</div>
+    }
+    */
+
+   private renderDetailRow = (item:any, index:number) => {
+        return <div className="card">
+            <div><button onClick={()=> this.Deletedetail(item,index)}>删除</button></div>{/*onClick 赋值匿名函数就可以把对应item获取过来做参数*/}
+            <div className="card-body">
+            <h5 className="card-title"><b>{item.title}</b></h5>
+            <p className="card-text">{item.taskdesc}</p>
+            <span>完成日期:{item.fdate}</span><span>积分:{item.integral}</span><span>任务人:{this.renderStaffMember(item.staffmember)}</span>
+            </div>
+        </div>
+    }
+
+
 
 }
 

@@ -9,21 +9,16 @@ export class VTaskDetails extends VPage<CTask>{
     }
 
     private renderCompany = (item: any) => {
-        //let boxId = this.controller.boxCompany(item);//根据基础信息id获取基础信息
         return tv(item, values => <input className="form-control required-item" type="text" readOnly={true} value={values.name}></input>);//将基础信息的内容进行组织并输出
         //return tv(boxId);//不带第二个参数的时候内容输出格式在 tvs.tsx中定义
     }
 
     private renderDepartment = (item: any) => {
-        //let boxId = this.controller.boxDepartment(item);//根据基础信息id获取基础信息
         return tv(item, values => <input className="form-control required-item" type="text" readOnly={true} value={values.name}></input>);//将基础信息的内容进行组织并输出
     }
 
     private renderStaff = (item: any) => {
-        //let boxId = this.controller.boxStaffmember(item);//根据基础信息id获取基础信息
-        //return tv(boxId,(values) => <span>{values.name}</span>);//将基础信息的内容进行组织并输出
-
-        return tv(item, values => <input className="form-control required-item" type="text" readOnly={true} value={values.name}></input>);
+        return tv(item, values => <input className="form-control required-item" type="text" readOnly={true} value={values.name}></input>);//将基础信息的内容进行组织并输出
     }
     
     private page =(taskdetail:taskdetail) =>{
@@ -52,7 +47,7 @@ export class VTaskDetails extends VPage<CTask>{
         };
 
         return <Page header='任务详情' headerClassName="bg-primary" back="close">
-            <Form schema={schema} uiSchema={uis} formData={formdate} fieldLabelSize={2} className="m-3" requiredFlag={false} />
+            <Form schema={schema} uiSchema={uis} formData={formdate} fieldLabelSize={2} className="m-3" requiredFlag={false} />{/*requiredFlag用于设置统一控制是否显示必填标识*/}
         </Page>
 
     }

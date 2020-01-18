@@ -1,0 +1,17 @@
+{
+    "task":[
+        {"name":"staff","type":"id"},    
+        {"name":"date","type":"number"},
+        {"name":"title","type":"string"},
+        {"name":"taskdesc","type":"string"},
+        {"name":"integral","type":"number"}
+    ],
+
+    "taskintegral":[
+            {"name":"company","type":"id"},
+            {"name":"department","type":"id"},      
+            {"name":"taskdetail","type":"array","fields":"task"},
+            {"name":"note","type":"string"}
+        ]
+    
+}

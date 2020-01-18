@@ -7,6 +7,7 @@ export interface TaskManage {
     Task:Sheet;
     PENDING:Pending;
     QueryTask:Query;
+    Submitintegral:Action;
 }
 
 export interface Task {

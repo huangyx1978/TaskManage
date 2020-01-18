@@ -20,21 +20,26 @@ SHEET Task ver 0.1(
 
  }
  ACTION save{--带名字的ACTION需要在前台显示调用
-     STATE to saved;--将单据状态置位 saved状态
+    var recid id;
+
+    foreach taskdetail
+    {
+        PENDING Taskpendding +(company:company, department:department, staffmember:staffmember, fdate:fdate, title:title, taskdesc:taskdesc, integral:integral) to recId;
+    };
+    STATE to saved;--将单据状态置位 saved状态
  }
  STATE saved{--状态定义
      ACTION submit{--当前状态下可执行的ACTION
-        var recid id;
+        --var recid id;
 
-        foreach taskdetail
-        {
-            PENDING Taskpendding +(company:company, department:department, staffmember:staffmember, fdate:fdate, title:title, taskdesc:taskdesc, integral:integral) to recId;
-        };
+        --foreach taskdetail
+        --{
+            --PENDING Taskpendding +(company:company, department:department, staffmember:staffmember, fdate:fdate, title:title, taskdesc:taskdesc, integral:integral) to recId;
+        --};
 
         STATE to END;
      };
  };
-
 
 
 PENDING Taskpendding (
@@ -73,3 +78,26 @@ PAGE (
         order by a.id asc
         limit $pageSize;
 };
+
+
+ ACTION Submitintegral(
+    company ID Company,
+    department ID Department,
+    arr taskdetail(
+        fdate datetime,
+        staffmember ID StaffMember,
+        title varchar(200),
+        taskdesc varchar(2000),
+        integral int
+    ),
+    note varchar(200)
+  )
+  {
+    foreach taskdetail
+    {
+        BUS taskbus.taskintegral set company=company,department=department,note=note;
+        foreach taskdetail{
+            BUS taskbus.taskintegral into taskdetail add staff=staffmember,title=title,taskdesc=taskdesc,integral=integral,date=unix_timestamp(fdate);
+        };
+    };
+  };

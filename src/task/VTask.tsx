@@ -7,30 +7,23 @@ export class VTask extends VPage<CTask>{
 
     }
 
-    /*单个数据项输出界面元素*/
-    private renderTask=(task:any, index:number) => {
-        //let {a1:no, a2:name} = company;//使用冒号可以进行变量更名
-        let {title,taskdesc,integral,fdate,staffmember} = task;//将company对象的no属性,name属性,telephone属性自动赋值给同名的变量,一种语法糖,类似于C#中Json对象与类的实例自动转换,通过名称自动匹配
-        let left = <FA name="tasks" className="text-success mx-2" fixWidth={true} size="lg" />;//列表左侧显示当地界面元素
-        let right = <span className="align-items-center">{tv(staffmember,(valus)=>valus.name)}</span>;//列表右侧显示的界面元素
-        return <LMR className="px-3 py-2 align-items-center cursor-pointer" left={left} right={right} ><b className="h6">{title}</b></LMR>//输出包含左中右三个分区的列表项
-    }
-
     /*页面滚动到底部时触发的操作*/
     private onScrollBottom = () => {
         this.controller.pager.more();//执行下一页的查询
     }
 
-    //在此展示任务详情
+    /*点击展示任务详情*/
     private onItemClick = (item:any) => {
         this.controller.showtaskdetail(item);
     }
 
+    /*按条件进行筛选,涉及到与后台交互的方法都要加异步标识*/
     private onseach= async (seachkey:string)=>{
         await this.controller.pager.first({key:seachkey});//将参数包装成一个Json对象的属性
      }
 
-     private onAddClick=() =>{
+     /*点击增加按钮时打开任务登记页面*/
+    private onAddClick=() =>{
         this.controller.showaddtask();
     }
 
@@ -43,4 +36,14 @@ export class VTask extends VPage<CTask>{
             <List items={this.controller.pager} item={{render: this.renderTask, onClick: this.onItemClick} }/> 
         </Page>
     }
+
+    /*单个数据项输出界面元素*/
+    private renderTask=(task:any, index:number) => {
+        let {title,taskdesc,integral,fdate,staffmember} = task;//将company对象的no属性,name属性,telephone属性自动赋值给同名的变量,一种语法糖,类似于C#中Json对象与类的实例自动转换,通过名称自动匹配
+        let left = <FA name="tasks" className="text-success mx-2" fixWidth={true} size="lg" />;//列表左侧显示当地界面元素
+        let right = <span className="align-items-center">{tv(staffmember,(valus)=>valus.name)}</span>;//列表右侧显示的界面元素,选择显示boxid类型对象的内容
+        return <LMR className="px-3 py-2 align-items-center cursor-pointer" left={left} right={right} ><b className="h6">{title}</b></LMR>//输出包含左中右三个分区的列表项
+    }
+
+
 }
